@@ -8,6 +8,8 @@ import (
 
 
 func IsDuplicate(err error) bool  {
-	var pgErr  *pgconn.PgError
+	var pgErr  = &pgconn.PgError{
+		Code: "23505",
+	}
 	return errors.As(err, &pgErr)
 }

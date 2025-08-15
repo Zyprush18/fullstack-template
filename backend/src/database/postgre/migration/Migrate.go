@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Zyprush18/fullstack-template/backend/src/database/entity"
-
+	"github.com/Zyprush18/fullstack-template/backend/src/database/postgre/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

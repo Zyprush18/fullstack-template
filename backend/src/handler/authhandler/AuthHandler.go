@@ -1,12 +1,14 @@
 package authhandler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/Zyprush18/fullstack-template/backend/src/helper"
 	"github.com/Zyprush18/fullstack-template/backend/src/model/request"
 	"github.com/Zyprush18/fullstack-template/backend/src/service/authservice"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type HandlerAuth struct {
@@ -45,5 +47,39 @@ func (h *HandlerAuth) Registration(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Register Successfully",
 	})
+}
 
+func (h *HandlerAuth) Login(c *gin.Context) {
+	req := new(request.Login)
+
+	// cek body request
+	if err:= c.ShouldBindJSON(&req);err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message":"Request Body Is Missing Or Validation Failed",
+			"errors": err.Error(),	
+		})
+		return
+	}
+
+
+	tokens,err:= h.services.Login(req)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) || err.Error() == "invalid password" {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message": "Invalid Credential",
+			})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message":"Something Went Wrong",
+		})
+		return
+	}
+
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Success",
+		"token": tokens,
+	})
 }
