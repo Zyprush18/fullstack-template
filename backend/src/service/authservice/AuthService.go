@@ -15,6 +15,7 @@ import (
 type AuthService interface {
 	Regist(req *request.User) error
 	Login(req *request.Login) (string, error)
+	Logout(e string) error
 }
 
 type claimRepoAuth struct {
@@ -65,4 +66,18 @@ func (c *claimRepoAuth) Login(req *request.Login) (string, error) {
 	}
 
 	return token,nil
+}
+
+func (c *claimRepoAuth) Logout(e string) error {
+	mail, err := c.repo.Logout(e)
+	
+	if err != nil {
+		return err
+	}
+	// delete di token di redis
+	if err:=c.rdb.Del(context.Background(), mail).Err();err != nil{
+		return err
+	}
+
+	return nil
 }

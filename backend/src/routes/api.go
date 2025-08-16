@@ -8,6 +8,7 @@ import (
 	"github.com/Zyprush18/fullstack-template/backend/src/database/redisdb"
 	"github.com/Zyprush18/fullstack-template/backend/src/handler/authhandler"
 	"github.com/Zyprush18/fullstack-template/backend/src/handler/rolehandler"
+	"github.com/Zyprush18/fullstack-template/backend/src/middleware"
 	"github.com/Zyprush18/fullstack-template/backend/src/repository/authrepo"
 	"github.com/Zyprush18/fullstack-template/backend/src/repository/rolerepo"
 	"github.com/Zyprush18/fullstack-template/backend/src/service/authservice"
@@ -26,20 +27,27 @@ func NewRouteApi(r *gin.Engine)  {
 	// redis
 	initrdb := redisdb.ConnectRedis(c.RHost,c.RPort,c.RUsername,c.RPassword)
 
+	// midldleware
+	initmdlwr := middleware.NewMiddleware(initrdb,c.JwtKey)
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(500, gin.H{
-			"message": "pong",
-		})
-	})
+	// api
+	api := r.Group("/api")
 
 	// authentication
 	repoauth := authrepo.NewConnectDB(initdb)
 	serviceauth := authservice.NewConnectRepo(&repoauth,initrdb,c.JwtKey)
 	handlerauth := authhandler.NewConnectService(serviceauth)
 
-	r.POST("/api/register", handlerauth.Registration)
-	r.POST("/api/login", handlerauth.Login)
+	api.POST("/register", handlerauth.Registration)
+	api.POST("/login", handlerauth.Login)
+
+	
+	// admin
+	admin := api.Group("/admin") 
+	admin.Use(initmdlwr.MiddlewareAuth())
+
+	// logout
+	admin.GET("/logout", handlerauth.Logout)
 
 	// role
 	reporole := rolerepo.NewConnectDB(initdb)
@@ -47,6 +55,6 @@ func NewRouteApi(r *gin.Engine)  {
 	handlerrole := rolehandler.NewConnectService(servicerole)
 
 
-	r.GET("/api/role", handlerrole.GetAll)
+	admin.GET("/role", handlerrole.GetAll)
 	r.Run()
 }

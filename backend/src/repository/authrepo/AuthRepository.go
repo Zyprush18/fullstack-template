@@ -9,6 +9,7 @@ import (
 type AuthRepo interface {
 	Registration(req *request.User) error
 	Login(req *request.Login) (*entity.User, error)
+	Logout(email string) (string,error)
 }
 
 type database struct {
@@ -34,4 +35,13 @@ func (d *database) Login(req *request.Login) (*entity.User,error) {
 	}
 
 	return &model_user,nil
+}
+
+func (d *database) Logout(email string) (string,error)  {
+	var model_user entity.User
+	if err:= d.db.Model(&entity.User{}).Where("email = ?", email).First(&model_user).Error;err != nil {
+		return "", err
+	}
+
+	return model_user.Email,nil
 }

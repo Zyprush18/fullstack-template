@@ -1,8 +1,11 @@
 package response
 
-import "gorm.io/gorm"
+import (
+	"github.com/Zyprush18/fullstack-template/backend/src/database/postgre/entity"
+
+)
 
 type Role struct {
 	Role string `json:"role"`
-	gorm.Model
+	entity.Model
 }

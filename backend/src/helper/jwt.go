@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -31,4 +32,22 @@ func GenerateJwtToken(key string, data *entity.User) (string, error) {
 	
 	// return token dan error
 	return jwtclaim.SignedString([]byte(key))
+}
+
+func DecryptJwtToken(token, jwtkey string) (*CustomClaims, error) {
+	claimstokem, err := jwt.ParseWithClaims(token, &CustomClaims{},func(t *jwt.Token) (any, error) {
+		return []byte(jwtkey),nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	claims,ok := claimstokem.Claims.(*CustomClaims)
+	if !ok {
+		return nil, errors.New("unknown type claims") 
+	}
+
+	return claims,nil
+
 }

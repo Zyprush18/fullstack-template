@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import router from '@/router';
 import axios from 'axios';
 import { reactive } from 'vue';
 
@@ -12,10 +13,12 @@ import { reactive } from 'vue';
             console.log(response.data);
 
             // set localstorage
-            localStorage.setItem("token", "Bearer "+response.data.token)
+            localStorage.setItem("token", "Bearer " + response.data.token)
+            router.push("/dashboard")
+
         }).catch(err => {
-            console.log(err.response.data);
-            
+            console.log(err.response.data.message);
+            router.back
         })
     }
 

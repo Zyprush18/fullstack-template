@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import RegisterAuth from '@/views/auth/RegisterAuth.vue'
 import LoginAuth from '@/views/auth/LoginAuth.vue'
+import DashboardAdmin from '@/views/admin/DashboardAdmin.vue'
+import UnauthorizedError from '@/views/error/UnauthorizedError.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +44,22 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginAuth,
+      meta: {
+        showNav:false
+      },
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: DashboardAdmin,
+      meta: {
+        showNav:false
+      },
+    },
+    {
+      path: '/unauthorized',
+      name: 'unauthorized',
+      component: UnauthorizedError,
       meta: {
         showNav:false
       },

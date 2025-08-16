@@ -83,3 +83,28 @@ func (h *HandlerAuth) Login(c *gin.Context) {
 		"token": tokens,
 	})
 }
+
+func (h *HandlerAuth) Logout(c *gin.Context) {
+	// ambil dari context request
+	email := c.MustGet("mail").(string)
+	
+	if err:= h.services.Logout(email);err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message":"Invalid Credential",
+			})
+			return
+		}
+
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message":"Something Wnet Wrong",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":"Success logout",
+	})
+
+}
